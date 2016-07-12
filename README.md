@@ -11,6 +11,12 @@ This is my setup to use Rails together with Docker for local development.  With 
 3. Start all the containers by running: `docker-compose up`.
 4. Now, you will have a local Rails server up and running at
    [localhost:3000](http://localhost:3000).
+5. If you get a missing database error, create the database by running:
+   `docker-compose run app rake db:create`.
+
+Notice the pattern of `docker-compose run app rake db:create`, you can
+run all commands that way in the main `app` container. I usually just
+start with `docker-compose run app bash` and run all my commands via it.
 
 ## Dockerfile
 
@@ -38,6 +44,11 @@ are two things that I would love to point up.
   to do everytime you run a ruby command. This script will first check
   whether all the gems are installed before using `bundle exec`. If not,
   it will just run the command normally without `bundle exec`.
+
+- `./script/start`: When you run `docker-compose up`, this bash script
+  will decide whether to install new gems or not. If there are new gems
+  to be installed, install the gems and start the Rails server. If not,
+  start the Rails server immediately.
 
 ## docker-compose.yml
 
@@ -67,3 +78,12 @@ Also, the `bundle` container is being used for the shared volume
 [`.dockerignore`](https://docs.docker.com/engine/reference/builder/#/dockerignore-file) contains a list a files that you want to ignore when
 building your docker container.  This will make sure that the build
 process is efficient.
+
+## config/environments/development.rib
+
+I added these two lines here:
+
+```ruby
+  # Get rid of the annoying: "Cannot render console from..." warning.
+  config.web_console.whitelisted_ips = `ip route|awk '/default/ { print $3 }'`.strip
+```
