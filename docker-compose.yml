@@ -1,0 +1,26 @@
+app:
+  build: .
+  command: ./script/start
+  volumes:
+    - .:/app
+  volumes_from:
+    - bundle
+  ports:
+    - "3000:3000"
+  links:
+    - postgres
+    - redis
+postgres:
+  image: postgres:9.5
+  volumes:
+    - .:/app
+  ports:
+    - "5432:5432"
+redis:
+  image: redis:3.0.5
+  ports:
+    - '6379:6379'
+bundle:
+  image: busybox
+  volumes:
+    - /bundle

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+bundle check || bundle install --jobs 5
+
+bundle exec rails server -b 0.0.0.0
